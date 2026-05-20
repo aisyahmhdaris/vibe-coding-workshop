@@ -59,7 +59,7 @@ function PivotLabMark() {
       <img
         src="/pivotlab-logo.png"
         alt="PivotLab"
-        style={{ height: "32px", objectFit: "contain" }} />
+        style={{ height: "32px", objectFit: "contain", mixBlendMode: "screen" }} />
       
       <div className="brand-programme">National AI Builder Programme</div>
     </div>);
