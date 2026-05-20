@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "builds": [
-    { "src": "vibe-coding-workshop/index.html", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/(.*)", "dest": "/vibe-coding-workshop/index.html" }
-  ]
-}
