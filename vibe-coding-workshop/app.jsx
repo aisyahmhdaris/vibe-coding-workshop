@@ -226,15 +226,18 @@ function FacilitatorChip({ auth }) {
         <svg viewBox="0 0 12 8" width="10" height="6" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
       </button>
       {open &&
-  <div className="facil-menu" onMouseLeave={() => setOpen(false)}>
-    <div className="facil-menu-head">
-      <div className="facil-menu-name">{auth.user.name}</div>
-      <div className="facil-menu-email dim">{auth.user.email}</div>
-    </div>
-    <button className="facil-menu-item" onClick={auth.signOut}>
-      Sign out
-    </button>
-  </div>
+        <div className="facil-menu" onMouseLeave={() => setOpen(false)}>
+          <div className="facil-menu-head">
+            <div className="facil-menu-name">{auth.user.name}</div>
+            <div className="facil-menu-email dim">{auth.user.email}</div>
+          </div>
+          <button className="facil-menu-item" onClick={auth.signOut}>
+            Sign out
+          </button>
+        </div>
+      }
+    </div>  
+  );
 }
 
 function LoginModal({ auth, onClose }) {
