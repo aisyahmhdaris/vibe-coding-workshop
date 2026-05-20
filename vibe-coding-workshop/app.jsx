@@ -57,7 +57,7 @@ function PivotLabMark() {
   return (
     <div className="pivot-mark-wrap">
       <img
-        src="https://imgur.com/a/HXe3T2m"
+        src="/pivotlab-logo.png"
         alt="PivotLab"
         style={{ height: "32px", objectFit: "contain" }} />
       
