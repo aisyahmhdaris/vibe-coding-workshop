@@ -1,6 +1,6 @@
 const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
-// CONFIG, GROUPS, CRITERIA, YEAR, sheetsApi, useWorkshopData, useAuth, GoogleSignInButton
+// CONFIG, GROUPS, CRITERIA, YEAR, FACILITATOR_GROUPS, sheetsApi, useWorkshopData, useAuth, GoogleSignInButton
 // are all loaded from config.jsx + auth.jsx as window globals.
 
 // ─────────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ function StarRow({ value, onChange, id }) {
 
 function Star({ filled }) {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true">
       <path d="M12 2.6l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.6l-5.88 3.1 1.12-6.55L2.48 9.52l6.58-.96L12 2.6z"
         fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
     </svg>);
@@ -135,11 +135,11 @@ function ErrorBanner({ error, onRetry }) {
 // ─────────────────────────────────────────────────────────────
 // Header
 // ─────────────────────────────────────────────────────────────
-function Header({ tab, setTab, auth, onOpenLogin, submissionCount }) {
+function Header({ tab, setTab, auth, onOpenLogin }) {
   const allTabs = [
-    { id: "submit", label: "Submit App", sub: "Student", facil: false },
-    { id: "submissions", label: "Submissions", sub: "Facilitator", facil: true },
-    { id: "scoring", label: "Scoring", sub: "Facilitator", facil: true }];
+    { id: "submit",      label: "Submit App",   sub: "Student",     facil: false },
+    { id: "submissions", label: "Submissions",  sub: "Facilitator", facil: true  },
+    { id: "scoring",     label: "Scoring",      sub: "Facilitator", facil: true  }];
 
   const visibleTabs = allTabs.filter((t) => !t.facil || auth.user);
 
@@ -168,12 +168,8 @@ function Header({ tab, setTab, auth, onOpenLogin, submissionCount }) {
 
       <nav className="tab-bar" role="tablist">
         {visibleTabs.map((t) =>
-          <button
-            key={t.id}
-            role="tab"
-            aria-selected={tab === t.id}
-            className={`tab ${tab === t.id ? "active" : ""}`}
-            onClick={() => setTab(t.id)}>
+          <button key={t.id} role="tab" aria-selected={tab === t.id}
+            className={`tab ${tab === t.id ? "active" : ""}`} onClick={() => setTab(t.id)}>
             <span className="tab-sub">{t.sub}</span>
             <span className="tab-label"><span>{t.label}</span></span>
             <span className="tab-underline"></span>
@@ -214,9 +210,7 @@ function FacilitatorChip({ auth }) {
             <div className="facil-menu-name">{auth.user.name}</div>
             <div className="facil-menu-email dim">{auth.user.email}</div>
           </div>
-          <button className="facil-menu-item" onClick={auth.signOut}>
-            Sign out
-          </button>
+          <button className="facil-menu-item" onClick={auth.signOut}>Sign out</button>
         </div>
       }
     </div>
@@ -230,30 +224,27 @@ function LoginModal({ auth, onClose }) {
         <button className="modal-close" onClick={onClose} aria-label="Close">×</button>
         <div className="modal-eyebrow mono">// facilitator access</div>
         <h2 className="modal-title">Sign in to score teams</h2>
-        <p className="modal-sub">Facilitator tools (submissions list + scoring) are gated to signed-in PivotLab staff.</p>
+        <p className="modal-sub">Facilitator tools are gated to signed-in PivotLab staff.</p>
         <div className="modal-gsi">
           <GoogleSignInButton gsiReady={auth.gsiReady} />
           {!auth.gsiReady && !auth.checking &&
-            <div className="modal-loading"><Spinner size={14} /> <span>LOADING GOOGLE SIGN-IN…</span></div>
-          }
+            <div className="modal-loading"><Spinner size={14} /> <span>LOADING GOOGLE SIGN-IN…</span></div>}
           {auth.checking &&
-            <div className="modal-loading"><Spinner size={14} /> <span>VERIFYING ACCESS…</span></div>
-          }
+            <div className="modal-loading"><Spinner size={14} /> <span>VERIFYING ACCESS…</span></div>}
         </div>
         {auth.error &&
           <div className="modal-error">
             <strong>⚠ Access denied</strong>
             <div>{auth.error}</div>
             <button className="modal-error-dismiss" onClick={auth.clearError}>Try a different account</button>
-          </div>
-        }
+          </div>}
         <div className="modal-foot mono dim"></div>
       </div>
     </div>);
 }
 
 // ─────────────────────────────────────────────────────────────
-// Skeletons / loading
+// Loading panel
 // ─────────────────────────────────────────────────────────────
 function LoadingPanel({ label = "Loading from Google Sheet…" }) {
   return (
@@ -270,15 +261,15 @@ function LoadingPanel({ label = "Loading from Google Sheet…" }) {
 // TAB 1 · Submit App
 // ─────────────────────────────────────────────────────────────
 function SubmitTab({ submissions, submitEntry, loading }) {
-  const [group, setGroup] = useState(GROUPS[0]);
-  const [name, setName] = useState("");
+  const [group, setGroup]     = useState(GROUPS[0]);
+  const [name, setName]       = useState("");
   const [members, setMembers] = useState("");
   const [problem, setProblem] = useState("");
   const [solution, setSolution] = useState("");
-  const [link, setLink] = useState("");
+  const [link, setLink]       = useState("");
   const [confirmed, setConfirmed] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
   const existing = submissions[group];
 
@@ -297,25 +288,11 @@ function SubmitTab({ submissions, submitEntry, loading }) {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!name.trim() || !link.trim() || submitting) return;
-    const entry = {
-      group,
-      name: name.trim(),
-      members: members.trim(),
-      problem: problem.trim(),
-      solution: solution.trim(),
-      link: link.trim(),
-      timestamp: Date.now()
-    };
-    setSubmitting(true);
-    setError(null);
-    try {
-      await submitEntry(entry);
-      setConfirmed(entry);
-    } catch (err) {
-      setError(String(err.message || err));
-    } finally {
-      setSubmitting(false);
-    }
+    const entry = { group, name: name.trim(), members: members.trim(), problem: problem.trim(), solution: solution.trim(), link: link.trim(), timestamp: Date.now() };
+    setSubmitting(true); setError(null);
+    try { await submitEntry(entry); setConfirmed(entry); }
+    catch (err) { setError(String(err.message || err)); }
+    finally { setSubmitting(false); }
   }
 
   function reset() { setConfirmed(null); }
@@ -341,7 +318,7 @@ function SubmitTab({ submissions, submitEntry, loading }) {
             </div>
             <div className="confirm-script">Submitted!</div>
             <h2 className="confirm-title">{confirmed.group} is locked in.</h2>
-            <p className="confirm-sub">Your app <strong>{confirmed.name}</strong> has been transmitted to the PivotLab judging panel.</p>
+            <p className="confirm-sub">Your app <strong>{confirmed.name}</strong> has been received by the PivotLab judging panel.</p>
             <div className="confirm-card">
               <div className="confirm-row"><span>GROUP</span><span className="mono">{confirmed.group}</span></div>
               <div className="confirm-row"><span>APP</span><span className="mono">{confirmed.name}</span></div>
@@ -396,41 +373,32 @@ function SubmitTab({ submissions, submitEntry, loading }) {
             </select>
             <svg className="select-caret" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
           </div>
-          {existing &&
-            <div className="field-hint hint-warn">
-              ⚠ {group} already submitted <strong>{existing.name}</strong> — submitting again will overwrite it.
-            </div>
-          }
+          {existing && <div className="field-hint hint-warn">⚠ {group} already submitted <strong>{existing.name}</strong> — submitting again will overwrite it.</div>}
         </label>
 
         <label className="field">
           <span className="field-label">Team Member Names <em>required</em></span>
-          <input className="input" type="text" value={members} onChange={(e) => setMembers(e.target.value)}
-            placeholder="e.g. Ahmad, Siti, Razif" maxLength={200} />
+          <input className="input" type="text" value={members} onChange={(e) => setMembers(e.target.value)} placeholder="e.g. Ahmad, Siti, Razif" maxLength={200} />
         </label>
 
         <label className="field">
           <span className="field-label">App Name <em>required</em></span>
-          <input className="input" type="text" value={name} onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Pasar Pintar" maxLength={60} />
+          <input className="input" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Pasar Pintar" maxLength={60} />
         </label>
 
         <label className="field">
           <span className="field-label">Problem <em>required</em></span>
-          <textarea className="input textarea" value={problem} onChange={(e) => setProblem(e.target.value)}
-            placeholder="What problem does your app solve?" maxLength={500} rows={3} />
+          <textarea className="input textarea" value={problem} onChange={(e) => setProblem(e.target.value)} placeholder="What problem does your app solve?" maxLength={500} rows={3} />
         </label>
 
         <label className="field">
           <span className="field-label">Solution <em>required</em></span>
-          <textarea className="input textarea" value={solution} onChange={(e) => setSolution(e.target.value)}
-            placeholder="How does your app solve it?" maxLength={500} rows={3} />
+          <textarea className="input textarea" value={solution} onChange={(e) => setSolution(e.target.value)} placeholder="How does your app solve it?" maxLength={500} rows={3} />
         </label>
 
         <label className="field">
           <span className="field-label">App Link <em>required</em></span>
-          <input className="input" type="url" value={link} onChange={(e) => setLink(e.target.value)}
-            placeholder="https://..." />
+          <input className="input" type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://..." />
         </label>
 
         {error && <div className="form-error">⚠ {error}</div>}
@@ -455,38 +423,36 @@ function SubmitTab({ submissions, submitEntry, loading }) {
 // TAB 2 · Submissions
 // ─────────────────────────────────────────────────────────────
 function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
-  const list = useMemo(() => {
-    return Object.values(submissions).sort((a, b) => {
-      const na = parseInt(String(a.group).replace(/\D/g, ""), 10);
-      const nb = parseInt(String(b.group).replace(/\D/g, ""), 10);
-      return na - nb;
-    });
-  }, [submissions]);
+  const list = useMemo(() => Object.values(submissions).sort((a, b) => {
+    const na = parseInt(String(a.group).replace(/\D/g, ""), 10);
+    const nb = parseInt(String(b.group).replace(/\D/g, ""), 10);
+    return na - nb;
+  }), [submissions]);
 
-  const totalSubs = list.length;
+  const totalSubs   = list.length;
   const shortlisted = Object.values(scores).filter((s) => s.shortlisted).length;
   const fullyScored = Object.values(scores).filter((s) => CRITERIA.every((c) => s[c.key])).length;
 
   function exportCSV() {
-    const rows = [["Group", "App Name", "Team Members", "Problem", "Solution", "App Link", "Timestamp",
-      ...CRITERIA.map((c) => c.label), "Total", "Shortlisted", "Notes"]];
+    const rows = [["Group","App Name","Team Members","Problem","Solution","App Link","Timestamp",
+      ...CRITERIA.map((c) => c.label),"Total","Shortlisted","Liked","Improve"]];
     list.forEach((s) => {
       const sc = scores[s.group] || {};
       const ratings = CRITERIA.map((c) => sc[c.key] ?? "");
       const total = CRITERIA.reduce((sum, c) => sum + (Number(sc[c.key]) || 0), 0);
-      rows.push([s.group, s.name, s.members || "", s.problem || "", s.solution || "", s.link,
-        new Date(Number(s.timestamp) || s.timestamp).toISOString(),
-        ...ratings, total, sc.shortlisted ? "yes" : "no", sc.notes || ""]);
+      rows.push([s.group, s.name, s.members||"", s.problem||"", s.solution||"", s.link,
+        new Date(Number(s.timestamp)||s.timestamp).toISOString(),
+        ...ratings, total, sc.shortlisted?"yes":"no", sc.liked||"", sc.improve||""]);
     });
     const csv = rows.map((row) => row.map((cell) => {
       const v = String(cell ?? "");
-      return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+      return /[",\n]/.test(v) ? `"${v.replace(/"/g,'""')}"` : v;
     }).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `nabp-${CONFIG.city.toLowerCase()}-${YEAR}-submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `nabp-${CONFIG.city.toLowerCase()}-${YEAR}-${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
@@ -535,9 +501,9 @@ function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
                   </div>
                 </div>
                 <h3 className="sub-card-title">{s.name}</h3>
-                {s.members && <p className="sub-card-desc" style={{ color: "var(--cyan)", fontSize: "12px" }}>👥 {s.members}</p>}
-                {s.problem && <p className="sub-card-desc"><strong style={{ color: "var(--text-dim)" }}>Problem:</strong> {s.problem}</p>}
-                {s.solution && <p className="sub-card-desc"><strong style={{ color: "var(--text-dim)" }}>Solution:</strong> {s.solution}</p>}
+                {s.members  && <p className="sub-card-members">👥 {s.members}</p>}
+                {s.problem  && <p className="sub-card-desc"><strong>Problem:</strong> {s.problem}</p>}
+                {s.solution && <p className="sub-card-desc"><strong>Solution:</strong> {s.solution}</p>}
                 <div className="sub-card-foot">
                   <div className="sub-card-time mono dim">
                     {ts ? new Date(ts).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : "—"}
@@ -557,10 +523,7 @@ function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
 function Stat({ n, of, label, tone = "cyan" }) {
   return (
     <div className={`stat-card stat-${tone}`}>
-      <div className="stat-n">
-        {n}
-        {of !== undefined && <span className="stat-of">/{of}</span>}
-      </div>
+      <div className="stat-n">{n}{of !== undefined && <span className="stat-of">/{of}</span>}</div>
       <div className="stat-l">{label}</div>
     </div>);
 }
@@ -569,18 +532,37 @@ function Stat({ n, of, label, tone = "cyan" }) {
 // TAB 3 · Scoring
 // ─────────────────────────────────────────────────────────────
 function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail }) {
-  const submitted = useMemo(() => {
-    return Object.values(submissions).sort((a, b) => {
-      const na = parseInt(String(a.group).replace(/\D/g, ""), 10);
-      const nb = parseInt(String(b.group).replace(/\D/g, ""), 10);
-      return na - nb;
-    });
-  }, [submissions]);
+  // Get this facilitator's own groups (they cannot judge these)
+  const myGroupNums = (FACILITATOR_GROUPS[facilitatorEmail] || []);
 
-  const [selected, setSelected] = useState(submitted[0]?.group || "");
+  const submitted = useMemo(() => Object.values(submissions).sort((a, b) => {
+    const na = parseInt(String(a.group).replace(/\D/g, ""), 10);
+    const nb = parseInt(String(b.group).replace(/\D/g, ""), 10);
+    return na - nb;
+  }), [submissions]);
+
+  // Default selection = first group that is NOT the facilitator's own
+  const firstJudgeable = submitted.find((s) => {
+    const n = parseInt(String(s.group).replace(/\D/g, ""), 10);
+    return !myGroupNums.includes(n);
+  });
+
+  const [selected, setSelected] = useState(firstJudgeable?.group || "");
+
   useEffect(() => {
-    if ((!selected || !submissions[selected]) && submitted[0]) setSelected(submitted[0].group);
+    if (!selected || !submissions[selected]) {
+      const first = submitted.find((s) => {
+        const n = parseInt(String(s.group).replace(/\D/g, ""), 10);
+        return !myGroupNums.includes(n);
+      });
+      if (first) setSelected(first.group);
+    }
   }, [submitted, selected]);
+
+  const isOwnGroup = (group) => {
+    const n = parseInt(String(group).replace(/\D/g, ""), 10);
+    return myGroupNums.includes(n);
+  };
 
   const current = submissions[selected];
   const currentScore = scores[selected] || {};
@@ -589,34 +571,31 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
   useEffect(() => {
     setDraft({
       functionality: Number(currentScore.functionality) || 0,
-      visual: Number(currentScore.visual) || 0,
-      problem: Number(currentScore.problem) || 0,
-      concept: Number(currentScore.concept) || 0,
-      shortlisted: !!currentScore.shortlisted,
-      notes: currentScore.notes || ""
+      visual:        Number(currentScore.visual)        || 0,
+      problem:       Number(currentScore.problem)       || 0,
+      concept:       Number(currentScore.concept)       || 0,
+      shortlisted:   !!currentScore.shortlisted,
+      liked:         currentScore.liked   || "",
+      improve:       currentScore.improve || "",
     });
   }, [selected, currentScore.updatedAt]);
 
   const draftTotal = CRITERIA.reduce((sum, c) => sum + (Number(draft[c.key]) || 0), 0);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState(null);
+  const [saved,  setSaved]  = useState(false);
+  const [error,  setError]  = useState(null);
 
   function setCriterion(key, value) { setDraft((d) => ({ ...d, [key]: value })); }
 
   async function save() {
-    if (saving) return;
-    setSaving(true);
-    setError(null);
+    if (saving || isOwnGroup(selected)) return;
+    setSaving(true); setError(null);
     try {
       await saveScore({ ...draft, group: selected, facilitatorEmail, updatedAt: Date.now() });
       setSaved(true);
       setTimeout(() => setSaved(false), 1800);
-    } catch (e) {
-      setError(String(e.message || e));
-    } finally {
-      setSaving(false);
-    }
+    } catch (e) { setError(String(e.message || e)); }
+    finally { setSaving(false); }
   }
 
   const leaderboard = useMemo(() => {
@@ -647,20 +626,24 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
       </section>);
   }
 
+  const ownGroupSelected = isOwnGroup(selected);
+
   return (
     <section className="panel scoring-panel">
       <div className="scoring-grid">
         <div className="scoring-card">
+          {/* Group selector */}
           <div className="scoring-head">
             <div>
-              <div className="field-label">Scoring kumpulan</div>
+              <div className="facil-field-label">Scoring kumpulan</div>
               <div className="select-wrap select-wrap-lg">
                 <select className="input select select-lg" value={selected} onChange={(e) => setSelected(e.target.value)}>
                   {submitted.map((s) => {
+                    const own = isOwnGroup(s.group);
                     const sc = scores[s.group] || {};
                     const t = CRITERIA.reduce((sum, c) => sum + (Number(sc[c.key]) || 0), 0);
-                    const tag = CRITERIA.every((c) => sc[c.key]) ? `  ·  ${t}/20` : "  ·  unscored";
-                    return <option key={s.group} value={s.group}>{s.group} — {s.name}{tag}</option>;
+                    const tag = own ? "  ·  your group" : CRITERIA.every((c) => sc[c.key]) ? `  ·  ${t}/20` : "  ·  unscored";
+                    return <option key={s.group} value={s.group} disabled={own}>{s.group} — {s.name}{tag}</option>;
                   })}
                 </select>
                 <svg className="select-caret" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
@@ -669,72 +652,103 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
             <div className="total-tile">
               <div className="total-eyebrow mono">TOTAL</div>
               <div className="total-num">{draftTotal}<span className="total-of">/20</span></div>
-              <div className="total-bar">
-                <div className="total-bar-fill" style={{ width: `${draftTotal / 20 * 100}%` }}></div>
-              </div>
+              <div className="total-bar"><div className="total-bar-fill" style={{ width: `${draftTotal / 20 * 100}%` }}></div></div>
             </div>
           </div>
 
-          {current &&
+          {/* Own-group warning */}
+          {ownGroupSelected &&
+            <div className="own-group-warn">
+              🚫 This is your assigned group. You cannot score your own team — please select a different group.
+            </div>
+          }
+
+          {/* App info */}
+          {current && !ownGroupSelected &&
             <div className="scoring-meta">
               <a className="link-cyan link-arrow" href={current.link} target="_blank" rel="noopener noreferrer">
                 <span className="mono dim">APP →</span> {current.name}
                 <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </a>
-              {current.members && <p className="scoring-desc" style={{ color: "var(--cyan)", fontSize: "12px" }}>👥 {current.members}</p>}
-              {current.problem && <p className="scoring-desc"><strong>Problem:</strong> {current.problem}</p>}
+              {current.members  && <p className="scoring-desc" style={{ color: "var(--cyan)" }}>👥 {current.members}</p>}
+              {current.problem  && <p className="scoring-desc"><strong>Problem:</strong> {current.problem}</p>}
               {current.solution && <p className="scoring-desc"><strong>Solution:</strong> {current.solution}</p>}
             </div>
           }
 
-          <div className="criteria-list">
-            {CRITERIA.map((c, i) =>
-              <div key={c.key} className="criterion">
-                <div className="criterion-text">
-                  <div className="criterion-num mono">0{i + 1}</div>
-                  <div>
-                    <div className="criterion-label">{c.label}</div>
-                    <div className="criterion-sub">{c.sub}</div>
+          {/* Criteria */}
+          {!ownGroupSelected &&
+            <>
+              <div className="criteria-list">
+                {CRITERIA.map((c, i) =>
+                  <div key={c.key} className="criterion">
+                    <div className="criterion-text">
+                      <div className="criterion-num mono">0{i + 1}</div>
+                      <div>
+                        <div className="criterion-label">{c.label}</div>
+                        <div className="criterion-sub">{c.sub}</div>
+                      </div>
+                    </div>
+                    <StarRow id={c.key} value={draft[c.key] || 0} onChange={(v) => setCriterion(c.key, v)} />
                   </div>
-                </div>
-                <StarRow id={c.key} value={draft[c.key] || 0} onChange={(v) => setCriterion(c.key, v)} />
+                )}
               </div>
-            )}
-          </div>
 
-          <label className="field">
-            <span className="field-label">Facilitator notes <em className="opt">optional</em></span>
-            <textarea className="input textarea" rows={4} value={draft.notes || ""}
-              onChange={(e) => setDraft((d) => ({ ...d, notes: e.target.value }))}
-              placeholder="Strengths, weaknesses, anything to remember during deliberations…" />
-          </label>
+              {/* Structured feedback */}
+              <div className="feedback-section">
+                <div className="feedback-heading">Feedback for this team</div>
+                <label className="field">
+                  <span className="facil-field-label">
+                    <span className="feedback-icon">👍</span> One thing you liked
+                    <em className="opt"> optional</em>
+                  </span>
+                  <input className="input facil-input" type="text"
+                    value={draft.liked || ""}
+                    onChange={(e) => setDraft((d) => ({ ...d, liked: e.target.value }))}
+                    placeholder="e.g. Clean UI, solves a real problem, creative use of AI…"
+                    maxLength={200} />
+                </label>
+                <label className="field" style={{ marginTop: "14px" }}>
+                  <span className="facil-field-label">
+                    <span className="feedback-icon">💡</span> One thing to improve
+                    <em className="opt"> optional</em>
+                  </span>
+                  <input className="input facil-input" type="text"
+                    value={draft.improve || ""}
+                    onChange={(e) => setDraft((d) => ({ ...d, improve: e.target.value }))}
+                    placeholder="e.g. App crashed on mobile, problem statement was unclear…"
+                    maxLength={200} />
+                </label>
+              </div>
 
-          {error && <div className="form-error">⚠ {error}</div>}
+              {error && <div className="form-error">⚠ {error}</div>}
 
-          <div className="scoring-actions">
-            <button type="button" className={`btn btn-toggle ${draft.shortlisted ? "on" : ""}`}
-              onClick={() => setDraft((d) => ({ ...d, shortlisted: !d.shortlisted }))} aria-pressed={!!draft.shortlisted}>
-              <span className="toggle-dot"></span>
-              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
-                <path d="M12 2.6l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.6l-5.88 3.1 1.12-6.55L2.48 9.52l6.58-.96L12 2.6z" fill={draft.shortlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
-              </svg>
-              <span>{draft.shortlisted ? "Shortlisted" : "Shortlist team"}</span>
-            </button>
-            <div className="scoring-actions-right">
-              {saved && <span className="saved-flash mono">✓ SAVED</span>}
-              <button type="button" className="btn btn-primary" onClick={save} disabled={saving}>
-                {saving ? <><Spinner size={14} /><span>Saving…</span></> : "Save score"}
-              </button>
-            </div>
-          </div>
+              <div className="scoring-actions">
+                <button type="button" className={`btn btn-toggle ${draft.shortlisted ? "on" : ""}`}
+                  onClick={() => setDraft((d) => ({ ...d, shortlisted: !d.shortlisted }))} aria-pressed={!!draft.shortlisted}>
+                  <span className="toggle-dot"></span>
+                  <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                    <path d="M12 2.6l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.6l-5.88 3.1 1.12-6.55L2.48 9.52l6.58-.96L12 2.6z" fill={draft.shortlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                  </svg>
+                  <span>{draft.shortlisted ? "Shortlisted" : "Shortlist team"}</span>
+                </button>
+                <div className="scoring-actions-right">
+                  {saved && <span className="saved-flash mono">✓ SAVED</span>}
+                  <button type="button" className="btn btn-primary facil-save-btn" onClick={save} disabled={saving}>
+                    {saving ? <><Spinner size={14} /><span>Saving…</span></> : "Save score"}
+                  </button>
+                </div>
+              </div>
+            </>
+          }
         </div>
 
-        <Leaderboard rows={leaderboard} selected={selected} onSelect={setSelected} />
+        <Leaderboard rows={leaderboard} selected={selected} onSelect={(g) => { if (!isOwnGroup(g)) setSelected(g); }} myGroupNums={myGroupNums} />
       </div>
     </section>);
 }
 
-function Leaderboard({ rows, selected, onSelect }) {
+function Leaderboard({ rows, selected, onSelect, myGroupNums }) {
   return (
     <aside className="leaderboard">
       <div className="lb-head">
@@ -746,27 +760,29 @@ function Leaderboard({ rows, selected, onSelect }) {
         </div>
       </div>
       <ol className="lb-list">
-        {rows.map((r, i) =>
-          <li key={r.group}
-            className={`lb-row ${r.shortlisted ? "shortlisted" : ""} ${r.group === selected ? "current" : ""} ${r.scored ? "" : "unscored"}`}
-            onClick={() => onSelect(r.group)}>
-            <div className="lb-rank">
-              <span className="lb-rank-n">{i + 1}</span>
-              {r.shortlisted && <span className="lb-star">★</span>}
-            </div>
-            <div className="lb-main">
-              <div className="lb-group mono">{r.group}</div>
-              <div className="lb-name">{r.name}</div>
-              <div className="lb-bar">
-                <div className="lb-bar-fill" style={{ width: `${r.total / 20 * 100}%` }}></div>
+        {rows.map((r, i) => {
+          const n = parseInt(String(r.group).replace(/\D/g, ""), 10);
+          const isOwn = myGroupNums.includes(n);
+          return (
+            <li key={r.group}
+              className={`lb-row ${r.shortlisted ? "shortlisted" : ""} ${r.group === selected ? "current" : ""} ${r.scored ? "" : "unscored"} ${isOwn ? "own-group" : ""}`}
+              onClick={() => !isOwn && onSelect(r.group)}
+              title={isOwn ? "Your assigned group — cannot score" : ""}>
+              <div className="lb-rank">
+                <span className="lb-rank-n">{i + 1}</span>
+                {r.shortlisted && <span className="lb-star">★</span>}
               </div>
-            </div>
-            <div className="lb-score">
-              <div className="lb-score-n">{r.total}<span className="lb-score-of">/20</span></div>
-              <div className="lb-score-cap mono">{r.scored ? "scored" : "—"}</div>
-            </div>
-          </li>
-        )}
+              <div className="lb-main">
+                <div className="lb-group mono">{r.group} {isOwn && <span className="lb-own-tag">yours</span>}</div>
+                <div className="lb-name">{r.name}</div>
+                <div className="lb-bar"><div className="lb-bar-fill" style={{ width: `${r.total / 20 * 100}%` }}></div></div>
+              </div>
+              <div className="lb-score">
+                <div className="lb-score-n">{isOwn ? "—" : <>{r.total}<span className="lb-score-of">/20</span></>}</div>
+                <div className="lb-score-cap mono">{isOwn ? "your group" : r.scored ? "scored" : "—"}</div>
+              </div>
+            </li>);
+        })}
       </ol>
     </aside>);
 }
@@ -792,29 +808,22 @@ function App() {
       <Streaks />
       <HudRings />
       <div className="app-shell">
-        <Header tab={tab} setTab={setTab} auth={auth} onOpenLogin={() => setLoginOpen(true)} submissionCount={Object.keys(data.submissions).length} />
-
+        <Header tab={tab} setTab={setTab} auth={auth} onOpenLogin={() => setLoginOpen(true)} />
         <SetupBanner auth={auth} />
         <ErrorBanner error={data.error} onRetry={data.refetch} />
-
         <main className="app-main">
-          {tab === "submit" && (
-            <SubmitTab submissions={data.submissions} submitEntry={data.submitEntry} loading={data.loading} />
-          )}
+          {tab === "submit" &&
+            <SubmitTab submissions={data.submissions} submitEntry={data.submitEntry} loading={data.loading} />}
           {tab === "submissions" && auth.user &&
-            <SubmissionsTab submissions={data.submissions} scores={data.scores} loading={data.loading} onRefresh={data.refetch} />
-          }
+            <SubmissionsTab submissions={data.submissions} scores={data.scores} loading={data.loading} onRefresh={data.refetch} />}
           {tab === "scoring" && auth.user &&
-            <ScoringTab submissions={data.submissions} scores={data.scores} saveScore={data.saveScore} loading={data.loading} facilitatorEmail={auth.user.email} />
-          }
+            <ScoringTab submissions={data.submissions} scores={data.scores} saveScore={data.saveScore} loading={data.loading} facilitatorEmail={auth.user.email} />}
         </main>
-
         <footer className="app-foot mono dim">
           <span>PIVOTLAB · NATIONAL AI BUILDER PROGRAMME {YEAR} · {CONFIG.city.toUpperCase()}</span>
           <span>{sheetsApi.configured ? "" : "LOCAL FALLBACK · NO BACKEND CONFIGURED"}</span>
         </footer>
       </div>
-
       {loginOpen && <LoginModal auth={auth} onClose={() => setLoginOpen(false)} />}
     </div>);
 }
