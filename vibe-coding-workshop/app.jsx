@@ -15,7 +15,6 @@ function Streaks() {
       <div className="streak streak-4"></div>
       <div className="streak streak-5"></div>
     </div>);
-
 }
 
 function HudRings() {
@@ -48,10 +47,9 @@ function HudRings() {
         </svg>
       </div>
     </>);
-
 }
 
-function GridBG() {return <div className="grid-bg" aria-hidden="true"></div>;}
+function GridBG() { return <div className="grid-bg" aria-hidden="true"></div>; }
 
 function PivotLabMark() {
   return (
@@ -60,10 +58,8 @@ function PivotLabMark() {
         src="/pivotlab-logo.png"
         alt="PivotLab"
         style={{ height: "32px", objectFit: "contain", mixBlendMode: "screen" }} />
-      
       <div className="brand-programme">National AI Builder Programme</div>
     </div>);
-
 }
 
 function Spinner({ size = 16, className = "" }) {
@@ -72,7 +68,6 @@ function Spinner({ size = 16, className = "" }) {
       <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2.4" opacity="0.2" />
       <path d="M12 3 a 9 9 0 0 1 9 9" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
     </svg>);
-
 }
 
 function StarRow({ value, onChange, id }) {
@@ -89,23 +84,21 @@ function StarRow({ value, onChange, id }) {
             aria-label={`${n} star${n > 1 ? "s" : ""}`}
             className={`star-btn ${active ? "active" : ""}`}
             onClick={() => onChange(value === n ? 0 : n)}>
-            
             <Star filled={active} />
           </button>);
-
       })}
       <span className="star-val">{value || 0}<span className="star-val-dim">/5</span></span>
     </div>);
-
 }
+
 function Star({ filled }) {
   return (
     <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
       <path d="M12 2.6l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.6l-5.88 3.1 1.12-6.55L2.48 9.52l6.58-.96L12 2.6z"
-      fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+        fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
     </svg>);
-
 }
+
 function Pill({ children, tone = "cyan", className = "" }) {
   return <span className={`pill pill-${tone} ${className}`}>{children}</span>;
 }
@@ -128,7 +121,6 @@ function SetupBanner({ auth }) {
         </ul>
       </div>
     </div>);
-
 }
 
 function ErrorBanner({ error, onRetry }) {
@@ -139,7 +131,6 @@ function ErrorBanner({ error, onRetry }) {
       <span className="error-banner-msg">Backend error: {error}</span>
       {onRetry && <button className="btn btn-ghost btn-sm" onClick={onRetry}>Retry</button>}
     </div>);
-
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -147,9 +138,9 @@ function ErrorBanner({ error, onRetry }) {
 // ─────────────────────────────────────────────────────────────
 function Header({ tab, setTab, auth, onOpenLogin, submissionCount }) {
   const allTabs = [
-  { id: "submit", label: "Submit App", sub: "Student", facil: false },
-  { id: "submissions", label: "Submissions", sub: "Facilitator", facil: true },
-  { id: "scoring", label: "Scoring", sub: "Facilitator", facil: true }];
+    { id: "submit", label: "Submit App", sub: "Student", facil: false },
+    { id: "submissions", label: "Submissions", sub: "Facilitator", facil: true },
+    { id: "scoring", label: "Scoring", sub: "Facilitator", facil: true }];
 
   const visibleTabs = allTabs.filter((t) => !t.facil || auth.user);
 
@@ -167,11 +158,10 @@ function Header({ tab, setTab, auth, onOpenLogin, submissionCount }) {
       <div className="title-block">
         <h1 className="title-words">
           <span className="title-vibe">
-            <span className="title-cyan" style={{ fontFamily: "Orbitron" }}>Vibe Coding</span>
+            <span className="title-cyan" style={{ fontFamily: "Orbitron" }}>National AI Builder Programme</span>
             <span className="title-outline" style={{ fontFamily: "Orbitron" }}>{YEAR}</span>
           </span>
           <span className="title-vibe">
-            <span className="title-cyan" style={{ fontFamily: "Orbitron" }}>Workshop</span>
             <span className="title-melaka" style={{ fontFamily: "Orbitron" }}>{CONFIG.city.toUpperCase()}</span>
           </span>
         </h1>
@@ -179,25 +169,21 @@ function Header({ tab, setTab, auth, onOpenLogin, submissionCount }) {
 
       <nav className="tab-bar" role="tablist">
         {visibleTabs.map((t) =>
-        <button
-          key={t.id}
-          role="tab"
-          aria-selected={tab === t.id}
-          className={`tab ${tab === t.id ? "active" : ""}`}
-          onClick={() => setTab(t.id)}>
-          
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            className={`tab ${tab === t.id ? "active" : ""}`}
+            onClick={() => setTab(t.id)}>
             <span className="tab-sub">{t.sub}</span>
-            <span className="tab-label">
-              <span>{t.label}</span>
-            </span>
+            <span className="tab-label"><span>{t.label}</span></span>
             <span className="tab-underline"></span>
           </button>
         )}
         <div className="tab-spacer"></div>
         {auth.user ?
-        <FacilitatorChip auth={auth} /> :
-
-        <button className="facil-login-btn" onClick={onOpenLogin}>
+          <FacilitatorChip auth={auth} /> :
+          <button className="facil-login-btn" onClick={onOpenLogin}>
             <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
               <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
@@ -206,7 +192,6 @@ function Header({ tab, setTab, auth, onOpenLogin, submissionCount }) {
         }
       </nav>
     </header>);
-
 }
 
 function FacilitatorChip({ auth }) {
@@ -215,9 +200,8 @@ function FacilitatorChip({ auth }) {
     <div className="facil-chip-wrap">
       <button className="facil-chip" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
         {auth.user.picture ?
-        <img src={auth.user.picture} alt="" className="facil-avatar" referrerPolicy="no-referrer" /> :
-
-        <div className="facil-avatar facil-avatar-fallback">{(auth.user.name || "?").slice(0, 1).toUpperCase()}</div>
+          <img src={auth.user.picture} alt="" className="facil-avatar" referrerPolicy="no-referrer" /> :
+          <div className="facil-avatar facil-avatar-fallback">{(auth.user.name || "?").slice(0, 1).toUpperCase()}</div>
         }
         <div className="facil-chip-text">
           <span className="facil-name">{auth.user.name}</span>
@@ -236,7 +220,7 @@ function FacilitatorChip({ auth }) {
           </button>
         </div>
       }
-    </div>  
+    </div>
   );
 }
 
@@ -248,31 +232,25 @@ function LoginModal({ auth, onClose }) {
         <div className="modal-eyebrow mono">// facilitator access</div>
         <h2 className="modal-title">Sign in to score teams</h2>
         <p className="modal-sub">Facilitator tools (submissions list + scoring) are gated to signed-in PivotLab staff.</p>
-
         <div className="modal-gsi">
           <GoogleSignInButton gsiReady={auth.gsiReady} />
           {!auth.gsiReady && !auth.checking &&
-          <div className="modal-loading"><Spinner size={14} /> <span>LOADING GOOGLE SIGN-IN…</span></div>
+            <div className="modal-loading"><Spinner size={14} /> <span>LOADING GOOGLE SIGN-IN…</span></div>
           }
           {auth.checking &&
-          <div className="modal-loading"><Spinner size={14} /> <span>VERIFYING ACCESS…</span></div>
+            <div className="modal-loading"><Spinner size={14} /> <span>VERIFYING ACCESS…</span></div>
           }
         </div>
-
         {auth.error &&
-        <div className="modal-error">
+          <div className="modal-error">
             <strong>⚠ Access denied</strong>
             <div>{auth.error}</div>
             <button className="modal-error-dismiss" onClick={auth.clearError}>Try a different account</button>
           </div>
         }
-
-        <div className="modal-foot mono dim">
-
-        </div>
+        <div className="modal-foot mono dim"></div>
       </div>
     </div>);
-
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -287,7 +265,6 @@ function LoadingPanel({ label = "Loading from Google Sheet…" }) {
         <div className="loading-bar"><div className="loading-bar-fill"></div></div>
       </div>
     </section>);
-
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -296,8 +273,10 @@ function LoadingPanel({ label = "Loading from Google Sheet…" }) {
 function SubmitTab({ submissions, submitEntry, loading }) {
   const [group, setGroup] = useState(GROUPS[0]);
   const [name, setName] = useState("");
+  const [members, setMembers] = useState("");
+  const [problem, setProblem] = useState("");
+  const [solution, setSolution] = useState("");
   const [link, setLink] = useState("");
-  const [desc, setDesc] = useState("");
   const [confirmed, setConfirmed] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -307,10 +286,12 @@ function SubmitTab({ submissions, submitEntry, loading }) {
   useEffect(() => {
     if (existing) {
       setName(existing.name || "");
+      setMembers(existing.members || "");
+      setProblem(existing.problem || "");
+      setSolution(existing.solution || "");
       setLink(existing.link || "");
-      setDesc(existing.desc || "");
     } else {
-      setName("");setLink("");setDesc("");
+      setName(""); setMembers(""); setProblem(""); setSolution(""); setLink("");
     }
   }, [group, existing?.timestamp]);
 
@@ -320,8 +301,10 @@ function SubmitTab({ submissions, submitEntry, loading }) {
     const entry = {
       group,
       name: name.trim(),
+      members: members.trim(),
+      problem: problem.trim(),
+      solution: solution.trim(),
       link: link.trim(),
-      desc: desc.trim(),
       timestamp: Date.now()
     };
     setSubmitting(true);
@@ -336,7 +319,7 @@ function SubmitTab({ submissions, submitEntry, loading }) {
     }
   }
 
-  function reset() {setConfirmed(null);}
+  function reset() { setConfirmed(null); }
 
   if (confirmed) {
     return (
@@ -346,8 +329,8 @@ function SubmitTab({ submissions, submitEntry, loading }) {
           <div className="confirm-hex-border" aria-hidden="true">
             <svg viewBox="0 0 200 200" preserveAspectRatio="none">
               <polygon points="100,2 198,52 198,148 100,198 2,148 2,52"
-              fill="none" stroke="#9DE5FF" strokeWidth="0.6" strokeDasharray="2 2.5" strokeLinecap="round"
-              style={{ filter: "drop-shadow(0 0 4px rgba(157,229,255,0.6))" }} />
+                fill="none" stroke="#9DE5FF" strokeWidth="0.6" strokeDasharray="2 2.5" strokeLinecap="round"
+                style={{ filter: "drop-shadow(0 0 4px rgba(157,229,255,0.6))" }} />
             </svg>
           </div>
           <div className="confirm-inner">
@@ -360,24 +343,22 @@ function SubmitTab({ submissions, submitEntry, loading }) {
             <div className="confirm-script">Submitted!</div>
             <h2 className="confirm-title">{confirmed.group} is locked in.</h2>
             <p className="confirm-sub">Your app <strong>{confirmed.name}</strong> has been transmitted to the PivotLab judging panel.</p>
-
             <div className="confirm-card">
               <div className="confirm-row"><span>GROUP</span><span className="mono">{confirmed.group}</span></div>
               <div className="confirm-row"><span>APP</span><span className="mono">{confirmed.name}</span></div>
+              {confirmed.members && <div className="confirm-row"><span>TEAM</span><span className="mono">{confirmed.members}</span></div>}
               <div className="confirm-row"><span>LINK</span><a href={confirmed.link} target="_blank" rel="noopener noreferrer" className="link-cyan mono">{confirmed.link}</a></div>
               <div className="confirm-row"><span>AT</span><span className="mono">{new Date(confirmed.timestamp).toLocaleTimeString()}</span></div>
             </div>
-
             <div className="confirm-actions">
               <button className="btn btn-ghost" onClick={reset}>Edit submission</button>
-              <button className="btn btn-primary" onClick={() => {reset();setGroup(GROUPS[(GROUPS.indexOf(group) + 1) % GROUPS.length]);}}>
+              <button className="btn btn-primary" onClick={() => { reset(); setGroup(GROUPS[(GROUPS.indexOf(group) + 1) % GROUPS.length]); }}>
                 Submit another →
               </button>
             </div>
           </div>
         </div>
       </section>);
-
   }
 
   return (
@@ -388,7 +369,7 @@ function SubmitTab({ submissions, submitEntry, loading }) {
         <p className="aside-body">Re-submitting will overwrite your group's previous entry — last save wins.</p>
         <ol className="aside-list">
           <li><span className="aside-num">01</span> Select your group</li>
-          <li><span className="aside-num">02</span> Name your app + paste link</li>
+          <li><span className="aside-num">02</span> Fill in your team + app details</li>
           <li><span className="aside-num">03</span> Hit submit</li>
         </ol>
         <div className="aside-footer">
@@ -398,7 +379,7 @@ function SubmitTab({ submissions, submitEntry, loading }) {
               <span className="stat-of">/{CONFIG.numGroups}</span>
             </div>
             <div className="stat-cap">
-              {loading ? <><Spinner size={10}/><span>syncing…</span></> : <span>submissions in</span>}
+              {loading ? <><Spinner size={10} /><span>syncing…</span></> : <span>submissions in</span>}
             </div>
           </div>
         </div>
@@ -406,7 +387,7 @@ function SubmitTab({ submissions, submitEntry, loading }) {
 
       <form className="submit-form" onSubmit={handleSubmit}>
         <label className="field">
-          <span className="field-label">Group <em>required</em></span>
+          <span className="field-label">Team Number <em>required</em></span>
           <div className="select-wrap">
             <select value={group} onChange={(e) => setGroup(e.target.value)} className="input select">
               {GROUPS.map((g) => {
@@ -417,27 +398,40 @@ function SubmitTab({ submissions, submitEntry, loading }) {
             <svg className="select-caret" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
           </div>
           {existing &&
-          <div className="field-hint hint-warn">
+            <div className="field-hint hint-warn">
               ⚠ {group} already submitted <strong>{existing.name}</strong> — submitting again will overwrite it.
             </div>
           }
         </label>
 
         <label className="field">
-          <span className="field-label">App name <em>required</em></span>
-          <input className="input" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Pasar Pintar" maxLength={60} />
+          <span className="field-label">Team Member Names <em>required</em></span>
+          <input className="input" type="text" value={members} onChange={(e) => setMembers(e.target.value)}
+            placeholder="e.g. Ahmad, Siti, Razif" maxLength={200} />
         </label>
 
         <label className="field">
-          <span className="field-label">App link <em>required</em></span>
-          <input className="input" type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://..." />
+          <span className="field-label">App Name <em>required</em></span>
+          <input className="input" type="text" value={name} onChange={(e) => setName(e.target.value)}
+            placeholder="e.g. Pasar Pintar" maxLength={60} />
         </label>
 
         <label className="field">
-          <span className="field-label">Short description <em className="opt">optional</em></span>
-          <textarea className="input textarea" value={desc} onChange={(e) => setDesc(e.target.value)}
-          placeholder="One sentence on what your app does and who it's for." maxLength={240} rows={3} />
-          <div className="field-counter">{desc.length}/240</div>
+          <span className="field-label">Problem <em>required</em></span>
+          <textarea className="input textarea" value={problem} onChange={(e) => setProblem(e.target.value)}
+            placeholder="What problem does your app solve?" maxLength={500} rows={3} />
+        </label>
+
+        <label className="field">
+          <span className="field-label">Solution <em>required</em></span>
+          <textarea className="input textarea" value={solution} onChange={(e) => setSolution(e.target.value)}
+            placeholder="How does your app solve it?" maxLength={500} rows={3} />
+        </label>
+
+        <label className="field">
+          <span className="field-label">App Link <em>required</em></span>
+          <input className="input" type="url" value={link} onChange={(e) => setLink(e.target.value)}
+            placeholder="https://..." />
         </label>
 
         {error && <div className="form-error">⚠ {error}</div>}
@@ -456,7 +450,6 @@ function SubmitTab({ submissions, submitEntry, loading }) {
         </div>
       </form>
     </section>);
-
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -476,15 +469,15 @@ function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
   const fullyScored = Object.values(scores).filter((s) => CRITERIA.every((c) => s[c.key])).length;
 
   function exportCSV() {
-    const rows = [["Group", "App Name", "App Link", "Description", "Timestamp",
-    ...CRITERIA.map((c) => c.label), "Total", "Shortlisted", "Notes"]];
+    const rows = [["Group", "App Name", "Team Members", "Problem", "Solution", "App Link", "Timestamp",
+      ...CRITERIA.map((c) => c.label), "Total", "Shortlisted", "Notes"]];
     list.forEach((s) => {
       const sc = scores[s.group] || {};
       const ratings = CRITERIA.map((c) => sc[c.key] ?? "");
       const total = CRITERIA.reduce((sum, c) => sum + (Number(sc[c.key]) || 0), 0);
-      rows.push([s.group, s.name, s.link, s.desc || "",
-      new Date(Number(s.timestamp) || s.timestamp).toISOString(),
-      ...ratings, total, sc.shortlisted ? "yes" : "no", sc.notes || ""]);
+      rows.push([s.group, s.name, s.members || "", s.problem || "", s.solution || "", s.link,
+        new Date(Number(s.timestamp) || s.timestamp).toISOString(),
+        ...ratings, total, sc.shortlisted ? "yes" : "no", sc.notes || ""]);
     });
     const csv = rows.map((row) => row.map((cell) => {
       const v = String(cell ?? "");
@@ -494,8 +487,8 @@ function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `vibe-coding-${CONFIG.city.toLowerCase()}-${YEAR}-submissions-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);a.click();a.remove();
+    a.download = `nabp-${CONFIG.city.toLowerCase()}-${YEAR}-submissions-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
@@ -521,20 +514,19 @@ function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
       </div>
 
       {totalSubs === 0 ?
-      <div className="empty">
+        <div className="empty">
           <div className="empty-glyph">∅</div>
           <h3>{loading ? "Loading submissions…" : "No submissions yet"}</h3>
           <p>{loading ? "Pulling from the Google Sheet." : "Once kumpulans start shipping, they'll appear here in order."}</p>
         </div> :
-
-      <div className="cards-grid">
+        <div className="cards-grid">
           {list.map((s) => {
-          const sc = scores[s.group] || {};
-          const total = CRITERIA.reduce((sum, c) => sum + (Number(sc[c.key]) || 0), 0);
-          const isScored = CRITERIA.every((c) => sc[c.key]);
-          const ts = Number(s.timestamp) || (s.timestamp ? new Date(s.timestamp).getTime() : 0);
-          return (
-            <article key={s.group} className={`sub-card ${sc.shortlisted ? "shortlisted" : ""}`}>
+            const sc = scores[s.group] || {};
+            const total = CRITERIA.reduce((sum, c) => sum + (Number(sc[c.key]) || 0), 0);
+            const isScored = CRITERIA.every((c) => sc[c.key]);
+            const ts = Number(s.timestamp) || (s.timestamp ? new Date(s.timestamp).getTime() : 0);
+            return (
+              <article key={s.group} className={`sub-card ${sc.shortlisted ? "shortlisted" : ""}`}>
                 <div className="sub-card-bar"></div>
                 <div className="sub-card-head">
                   <div className="sub-card-group mono">{String(s.group).toUpperCase()}</div>
@@ -544,7 +536,9 @@ function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
                   </div>
                 </div>
                 <h3 className="sub-card-title">{s.name}</h3>
-                {s.desc && <p className="sub-card-desc">{s.desc}</p>}
+                {s.members && <p className="sub-card-desc" style={{ color: "var(--cyan)", fontSize: "12px" }}>👥 {s.members}</p>}
+                {s.problem && <p className="sub-card-desc"><strong style={{ color: "var(--text-dim)" }}>Problem:</strong> {s.problem}</p>}
+                {s.solution && <p className="sub-card-desc"><strong style={{ color: "var(--text-dim)" }}>Solution:</strong> {s.solution}</p>}
                 <div className="sub-card-foot">
                   <div className="sub-card-time mono dim">
                     {ts ? new Date(ts).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : "—"}
@@ -555,12 +549,10 @@ function SubmissionsTab({ submissions, scores, loading, onRefresh }) {
                   </a>
                 </div>
               </article>);
-
-        })}
+          })}
         </div>
       }
     </section>);
-
 }
 
 function Stat({ n, of, label, tone = "cyan" }) {
@@ -572,7 +564,6 @@ function Stat({ n, of, label, tone = "cyan" }) {
       </div>
       <div className="stat-l">{label}</div>
     </div>);
-
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -612,7 +603,7 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
 
-  function setCriterion(key, value) {setDraft((d) => ({ ...d, [key]: value }));}
+  function setCriterion(key, value) { setDraft((d) => ({ ...d, [key]: value })); }
 
   async function save() {
     if (saving) return;
@@ -634,10 +625,7 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
       const sc = scores[s.group] || {};
       const total = CRITERIA.reduce((sum, c) => sum + (Number(sc[c.key]) || 0), 0);
       const filled = CRITERIA.every((c) => sc[c.key]);
-      return {
-        group: s.group, name: s.name, total,
-        shortlisted: !!sc.shortlisted, scored: filled
-      };
+      return { group: s.group, name: s.name, total, shortlisted: !!sc.shortlisted, scored: filled };
     });
     rows.sort((a, b) => {
       if (b.total !== a.total) return b.total - a.total;
@@ -658,7 +646,6 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
           <p>{loading ? "Pulling from the Google Sheet." : "Once kumpulans submit their apps, you can score them here."}</p>
         </div>
       </section>);
-
   }
 
   return (
@@ -690,18 +677,20 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
           </div>
 
           {current &&
-          <div className="scoring-meta">
+            <div className="scoring-meta">
               <a className="link-cyan link-arrow" href={current.link} target="_blank" rel="noopener noreferrer">
                 <span className="mono dim">APP →</span> {current.name}
                 <svg viewBox="0 0 14 14" width="11" height="11" aria-hidden="true"><path d="M4 10l6-6M5 4h5v5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </a>
-              {current.desc && <p className="scoring-desc">{current.desc}</p>}
+              {current.members && <p className="scoring-desc" style={{ color: "var(--cyan)", fontSize: "12px" }}>👥 {current.members}</p>}
+              {current.problem && <p className="scoring-desc"><strong>Problem:</strong> {current.problem}</p>}
+              {current.solution && <p className="scoring-desc"><strong>Solution:</strong> {current.solution}</p>}
             </div>
           }
 
           <div className="criteria-list">
             {CRITERIA.map((c, i) =>
-            <div key={c.key} className="criterion">
+              <div key={c.key} className="criterion">
                 <div className="criterion-text">
                   <div className="criterion-num mono">0{i + 1}</div>
                   <div>
@@ -717,15 +706,15 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
           <label className="field">
             <span className="field-label">Facilitator notes <em className="opt">optional</em></span>
             <textarea className="input textarea" rows={4} value={draft.notes || ""}
-            onChange={(e) => setDraft((d) => ({ ...d, notes: e.target.value }))}
-            placeholder="Strengths, weaknesses, anything to remember during deliberations…" />
+              onChange={(e) => setDraft((d) => ({ ...d, notes: e.target.value }))}
+              placeholder="Strengths, weaknesses, anything to remember during deliberations…" />
           </label>
 
           {error && <div className="form-error">⚠ {error}</div>}
 
           <div className="scoring-actions">
             <button type="button" className={`btn btn-toggle ${draft.shortlisted ? "on" : ""}`}
-            onClick={() => setDraft((d) => ({ ...d, shortlisted: !d.shortlisted }))} aria-pressed={!!draft.shortlisted}>
+              onClick={() => setDraft((d) => ({ ...d, shortlisted: !d.shortlisted }))} aria-pressed={!!draft.shortlisted}>
               <span className="toggle-dot"></span>
               <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
                 <path d="M12 2.6l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.6l-5.88 3.1 1.12-6.55L2.48 9.52l6.58-.96L12 2.6z" fill={draft.shortlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
@@ -744,7 +733,6 @@ function ScoringTab({ submissions, scores, saveScore, loading, facilitatorEmail 
         <Leaderboard rows={leaderboard} selected={selected} onSelect={setSelected} />
       </div>
     </section>);
-
 }
 
 function Leaderboard({ rows, selected, onSelect }) {
@@ -760,10 +748,9 @@ function Leaderboard({ rows, selected, onSelect }) {
       </div>
       <ol className="lb-list">
         {rows.map((r, i) =>
-        <li key={r.group}
-        className={`lb-row ${r.shortlisted ? "shortlisted" : ""} ${r.group === selected ? "current" : ""} ${r.scored ? "" : "unscored"}`}
-        onClick={() => onSelect(r.group)}>
-          
+          <li key={r.group}
+            className={`lb-row ${r.shortlisted ? "shortlisted" : ""} ${r.group === selected ? "current" : ""} ${r.scored ? "" : "unscored"}`}
+            onClick={() => onSelect(r.group)}>
             <div className="lb-rank">
               <span className="lb-rank-n">{i + 1}</span>
               {r.shortlisted && <span className="lb-star">★</span>}
@@ -783,7 +770,6 @@ function Leaderboard({ rows, selected, onSelect }) {
         )}
       </ol>
     </aside>);
-
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -795,18 +781,14 @@ function App() {
   const auth = useAuth();
   const data = useWorkshopData();
 
-  // If user signs out while on a facilitator tab, bounce them back to submit.
   useEffect(() => {
     if (!auth.user && (tab === "submissions" || tab === "scoring")) setTab("submit");
   }, [auth.user, tab]);
 
-  // Close login modal once auth flips on
-  useEffect(() => {if (auth.user) setLoginOpen(false);}, [auth.user]);
-
-  // (the form mounts immediately; loading state is shown inside the counter card)
+  useEffect(() => { if (auth.user) setLoginOpen(false); }, [auth.user]);
 
   return (
-    <div className="app-root" data-screen-label={`Vibe Coding Workshop · ${tab}`}>
+    <div className="app-root" data-screen-label={`NABP · ${tab}`}>
       <GridBG />
       <Streaks />
       <HudRings />
@@ -821,22 +803,21 @@ function App() {
             <SubmitTab submissions={data.submissions} submitEntry={data.submitEntry} loading={data.loading} />
           )}
           {tab === "submissions" && auth.user &&
-          <SubmissionsTab submissions={data.submissions} scores={data.scores} loading={data.loading} onRefresh={data.refetch} />
+            <SubmissionsTab submissions={data.submissions} scores={data.scores} loading={data.loading} onRefresh={data.refetch} />
           }
           {tab === "scoring" && auth.user &&
-          <ScoringTab submissions={data.submissions} scores={data.scores} saveScore={data.saveScore} loading={data.loading} facilitatorEmail={auth.user.email} />
+            <ScoringTab submissions={data.submissions} scores={data.scores} saveScore={data.saveScore} loading={data.loading} facilitatorEmail={auth.user.email} />
           }
         </main>
 
         <footer className="app-foot mono dim">
-          <span>PIVOTLAB · VIBE CODING WORKSHOP {YEAR} · {CONFIG.city.toUpperCase()}</span>
-          <span>{sheetsApi.configured ? "\n" : "LOCAL FALLBACK · NO BACKEND CONFIGURED"}</span>
+          <span>PIVOTLAB · NATIONAL AI BUILDER PROGRAMME {YEAR} · {CONFIG.city.toUpperCase()}</span>
+          <span>{sheetsApi.configured ? "" : "LOCAL FALLBACK · NO BACKEND CONFIGURED"}</span>
         </footer>
       </div>
 
       {loginOpen && <LoginModal auth={auth} onClose={() => setLoginOpen(false)} />}
     </div>);
-
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App />);
