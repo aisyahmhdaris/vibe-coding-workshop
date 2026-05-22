@@ -216,8 +216,6 @@ button { font-family: inherit; cursor: pointer; }
 }
 .hero-bot-img {
   position: absolute;
-  /* Poster ≈ 1270×870. Robot face sits around 75% across, 42% down.
-     Scale up so the tile crops tightly to its face. */
   width: 420%;
   height: auto;
   top: 50%;
@@ -423,8 +421,6 @@ button { font-family: inherit; cursor: pointer; }
 .aside-num { font-family: var(--font-mono); font-size: 10px; color: var(--pink); letter-spacing: 0.16em; }
 .aside-footer {
   margin-top: auto;
-  /* Push card up so its bottom aligns with the description textarea bottom,
-     not the submit button. The Submit button row is ~46px tall + 18px gap = ~64px. */
   margin-bottom: 72px;
 }
 .aside-stat {
@@ -469,13 +465,9 @@ button { font-family: inherit; cursor: pointer; }
   padding: 56px 44px 44px;
   text-align: center;
   background: rgba(24, 9, 58, 0.7);
-  /* hexagon shape, side flats */
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
-.confirm-hex-border {
-  position: absolute; inset: 0;
-  pointer-events: none;
-}
+.confirm-hex-border { position: absolute; inset: 0; pointer-events: none; }
 .confirm-hex-border svg { width: 100%; height: 100%; display: block; }
 .confirm-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .confirm-badge {
@@ -576,6 +568,7 @@ button { font-family: inherit; cursor: pointer; }
 .sub-card-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 .sub-card-title { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 0; line-height: 1.15; }
 .sub-card-desc { color: var(--text-dim); font-size: 13px; line-height: 1.5; margin: 0; }
+.sub-card-members { font-size: 13px; color: var(--cyan); margin: 0; }
 .sub-card-foot { margin-top: auto; padding-top: 8px; display: flex; justify-content: space-between; align-items: center; }
 .sub-card-time { font-size: 10px; letter-spacing: 0.16em; }
 
@@ -649,24 +642,25 @@ button { font-family: inherit; cursor: pointer; }
 .criterion-label { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
 .criterion-sub { font-size: 12px; color: var(--text-dimmer); margin-top: 2px; }
 
-.star-row { display: flex; align-items: center; gap: 4px; }
+/* Stars — enlarged for easier tapping by facilitators */
+.star-row { display: flex; align-items: center; gap: 6px; }
 .star-btn {
-  background: none; border: 0; padding: 6px;
+  background: none; border: 0; padding: 8px;
   color: rgba(180, 160, 255, 0.3);
   transition: color 0.15s, transform 0.15s, filter 0.15s;
-  border-radius: 6px;
+  border-radius: 8px;
 }
-.star-btn:hover { color: var(--cyan); transform: scale(1.1); }
+.star-btn:hover { color: var(--cyan); transform: scale(1.12); }
 .star-btn.active {
   color: var(--cyan);
   filter: drop-shadow(0 0 6px var(--cyan-glow));
 }
 .star-val {
   margin-left: 12px;
-  font-family: var(--font-mono); font-size: 13px;
-  color: var(--text); min-width: 32px; text-align: right;
+  font-family: var(--font-mono); font-size: 15px;
+  color: var(--text); min-width: 36px; text-align: right; font-weight: 600;
 }
-.star-val-dim { color: var(--text-dimmer); font-size: 11px; }
+.star-val-dim { color: var(--text-dimmer); font-size: 12px; font-weight: 400; }
 
 .scoring-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 .scoring-actions-right { display: flex; align-items: center; gap: 14px; }
@@ -988,4 +982,71 @@ button { font-family: inherit; cursor: pointer; }
   .title-melaka { font-size: 28px; }
   .criterion { grid-template-columns: 1fr; gap: 8px; }
   .star-row { justify-content: flex-end; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NEW — Facilitator UX additions (appended, nothing above changed)
+   ═══════════════════════════════════════════════════════════ */
+
+/* sub-card members line */
+.sub-card-members { font-size: 13px; color: var(--cyan); margin: 0; }
+
+/* Larger, clearer field labels for facilitator scoring */
+.facil-field-label {
+  display: flex; gap: 8px; align-items: center;
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+.facil-field-label em.opt {
+  font-style: normal; font-size: 13px;
+  color: var(--text-dimmer); font-weight: 400;
+}
+
+/* Larger inputs for facilitators */
+.facil-input { font-size: 16px; padding: 16px 18px; }
+
+/* Bigger save button — easier tap target */
+.facil-save-btn { padding: 16px 28px; font-size: 16px; }
+
+/* Own group warning */
+.own-group-warn {
+  padding: 16px 20px;
+  border: 1px solid rgba(255, 107, 176, 0.5);
+  background: rgba(255, 107, 176, 0.10);
+  border-radius: 12px;
+  color: var(--pink);
+  font-size: 15px; font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Feedback section — structured liked/improve inputs */
+.feedback-section {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.feedback-heading {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.feedback-icon { font-size: 18px; }
+
+/* Own-group rows in leaderboard — greyed out, not clickable */
+.lb-row.own-group { opacity: 0.4; cursor: default; }
+.lb-row.own-group:hover { background: transparent; }
+.lb-own-tag {
+  font-size: 9px; letter-spacing: 0.14em;
+  color: var(--warn);
+  background: rgba(255, 212, 106, 0.1);
+  border: 1px solid rgba(255, 212, 106, 0.3);
+  border-radius: 4px; padding: 1px 5px;
+  margin-left: 4px; vertical-align: middle;
+  font-family: var(--font-mono);
 }
