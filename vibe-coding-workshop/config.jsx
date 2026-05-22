@@ -1,11 +1,5 @@
 /* ─────────────────────────────────────────────────────────────
-   National AI Builder Programme · config + Google Sheets API client
-   ─────────────────────────────────────────────────────────────
-   This file owns:
-     · CONFIG   — change here to re-skin for a new workshop city/date.
-     · sheetsApi — GET-based API client that talks to the Apps Script
-                   Web App via query params.
-     · useWorkshopData — React hook that loads submissions + scores.
+   National AI Builder Programme · config + Google Sheets API
    ───────────────────────────────────────────────────────────── */
 
 const CONFIG = {
@@ -18,7 +12,7 @@ const CONFIG = {
   googleClientId: "364719068559-ds5qdalpj492sigofo4t8t6ierg41rbb.apps.googleusercontent.com",
 };
 
-const YEAR = (CONFIG.date.match(/\d{4}/) || [String(new Date().getFullYear())])[0];
+const YEAR   = (CONFIG.date.match(/\d{4}/) || [String(new Date().getFullYear())])[0];
 const GROUPS = Array.from({ length: CONFIG.numGroups }, (_, i) => `Kumpulan ${i + 1}`);
 
 const CRITERIA = [
@@ -29,29 +23,26 @@ const CRITERIA = [
 ];
 
 // ─────────────────────────────────────────────────────────────
-// APPS SCRIPT ENDPOINT CONTRACT (all GET, action via query param)
+// FACILITATOR GROUP ASSIGNMENTS
+// Each facilitator is assigned the groups they MENTOR.
+// They will NOT be able to score these groups.
+// ── HOW TO UPDATE TOMORROW ───────────────────────────────────
+// Just edit the arrays below with the correct group numbers.
+// Example: "aisyaharis88@gmail.com": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 // ─────────────────────────────────────────────────────────────
-//
-//   ?action=submit&workshop=Melaka
-//     &group=Kumpulan%201
-//     &appName=<string>
-//     &members=<string>
-//     &problem=<string>
-//     &solution=<string>
-//     &appLink=<string>
-//
-//   ?action=getSubmissions
-//   ?action=saveScore&workshop=Melaka&group=...&facilitatorEmail=...
-//     &functionality=<0-5>&visual=<0-5>&problem=<0-5>&concept=<0-5>
-//     &shortlisted=<true|false>&notes=<string>
-//   ?action=getScores
-//   ?action=checkWhitelist&email=<string>
-//
-// ─────────────────────────────────────────────────────────────
+const FACILITATOR_GROUPS = {
+  "aisyaharis88@gmail.com":  [],   // ← fill in group numbers tomorrow
+  "n.saw192@gmail.com":      [],
+  "sunnieloh@gmail.com":     [],
+  "thivassini@gmail.com":    [],
+  "jonnychu89@gmail.com":    [],
+  "pivot.tpp@gmail.com":     [],
+};
 
-function isPlaceholder(value) {
-  return !value || /PASTE_YOUR/i.test(value);
-}
+// ─────────────────────────────────────────────────────────────
+// API helpers
+// ─────────────────────────────────────────────────────────────
+function isPlaceholder(value) { return !value || /PASTE_YOUR/i.test(value); }
 
 function buildUrl(params) {
   const url = new URL(CONFIG.sheetUrl);
@@ -66,20 +57,17 @@ async function getJSON(url) {
   const res = await fetch(url, { method: "GET", redirect: "follow" });
   if (!res.ok) throw new Error("HTTP " + res.status);
   const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    throw new Error("Bad JSON response: " + text.slice(0, 120));
-  }
+  try { return JSON.parse(text); }
+  catch (e) { throw new Error("Bad JSON: " + text.slice(0, 120)); }
 }
 
 function normalize(rawData, mapRow) {
   let rows = [];
-  if (Array.isArray(rawData)) rows = rawData;
+  if (Array.isArray(rawData))                   rows = rawData;
   else if (Array.isArray(rawData?.submissions)) rows = rawData.submissions;
-  else if (Array.isArray(rawData?.scores)) rows = rawData.scores;
-  else if (Array.isArray(rawData?.data)) rows = rawData.data;
-  else if (Array.isArray(rawData?.rows)) rows = rawData.rows;
+  else if (Array.isArray(rawData?.scores))      rows = rawData.scores;
+  else if (Array.isArray(rawData?.data))        rows = rawData.data;
+  else if (Array.isArray(rawData?.rows))        rows = rawData.rows;
   else if (rawData && typeof rawData === "object") rows = Object.values(rawData);
 
   const out = {};
@@ -90,9 +78,9 @@ function normalize(rawData, mapRow) {
     const mapped = mapRow(r);
     if (!mapped || !mapped.group) return;
     const existing = out[mapped.group];
-    const t = Number(mapped.updatedAt || mapped.timestamp) || 0;
-    const tExisting = Number(existing?.updatedAt || existing?.timestamp) || 0;
-    if (!existing || t >= tExisting) out[mapped.group] = mapped;
+    const t  = Number(mapped.updatedAt  || mapped.timestamp) || 0;
+    const tE = Number(existing?.updatedAt || existing?.timestamp) || 0;
+    if (!existing || t >= tE) out[mapped.group] = mapped;
   });
   return out;
 }
@@ -118,8 +106,7 @@ function isWhitelistAllowed(data) {
   if (data === true) return true;
   if (data === false) return false;
   if (typeof data !== "object" || data === null) return false;
-  if (data.allowed === true || data.whitelisted === true ||
-      data.authorized === true || data.access === true) return true;
+  if (data.allowed === true || data.whitelisted === true || data.authorized === true || data.access === true) return true;
   if (typeof data.status === "string") {
     const s = data.status.toLowerCase();
     if (["allowed","ok","yes","whitelisted","granted","authorized"].includes(s)) return true;
@@ -138,61 +125,54 @@ const sheetsApi = {
       getJSON(buildUrl({ action: "getScores" })),
     ]);
     const submissions = normalize(subsData, (r) => ({
-      group:    r.group || r.groupName,
-      name:     r.appName || r.name || "",
-      members:  r.members || r.teamMembers || "",
-      problem:  r.problem || "",
-      solution: r.solution || "",
-      link:     r.appLink || r.link || r.url || "",
+      group:     r.group    || r.groupName,
+      name:      r.appName  || r.name     || "",
+      members:   r.members  || r.teamMembers || "",
+      problem:   r.problem  || "",
+      solution:  r.solution || "",
+      link:      r.appLink  || r.link || r.url || "",
       timestamp: parseTimestamp(r.timestamp || r.createdAt || r.ts || r.date),
     }));
     const scores = normalize(scoresData, (r) => ({
-      group:         r.group || r.groupName,
-      functionality: Number(r.functionality) || 0,
-      visual:        Number(r.visual)        || 0,
-      problem:       Number(r.problem)       || 0,
-      concept:       Number(r.concept)       || 0,
-      shortlisted:   parseBool(r.shortlisted),
-      notes:         r.notes || "",
+      group:           r.group    || r.groupName,
+      functionality:   Number(r.functionality) || 0,
+      visual:          Number(r.visual)        || 0,
+      problem:         Number(r.problem)       || 0,
+      concept:         Number(r.concept)       || 0,
+      shortlisted:     parseBool(r.shortlisted),
+      liked:           r.liked   || "",
+      improve:         r.improve || "",
       facilitatorEmail: r.facilitatorEmail || "",
-      updatedAt:     parseTimestamp(r.updatedAt || r.timestamp || r.ts || r.date),
+      updatedAt:       parseTimestamp(r.updatedAt || r.timestamp || r.ts || r.date),
     }));
     return { submissions, scores };
   },
 
   async submit(entry) {
-    const url = buildUrl({
-      action:      "submit",
-      workshop:    CONFIG.workshop,
-      group:       entry.group,
-      appName:     entry.name,
-      members:     entry.members || "",
-      problem:     entry.problem || "",
-      solution:    entry.solution || "",
-      appLink:     entry.link,
-    });
-    return await getJSON(url);
+    return await getJSON(buildUrl({
+      action: "submit", workshop: CONFIG.workshop,
+      group: entry.group, appName: entry.name,
+      members: entry.members || "", problem: entry.problem || "",
+      solution: entry.solution || "", appLink: entry.link,
+    }));
   },
 
   async saveScore(entry) {
-    const url = buildUrl({
-      action:           "saveScore",
-      workshop:         CONFIG.workshop,
-      group:            entry.group,
-      facilitatorEmail: entry.facilitatorEmail || "",
-      functionality:    Number(entry.functionality) || 0,
-      visual:           Number(entry.visual)        || 0,
-      problem:          Number(entry.problem)       || 0,
-      concept:          Number(entry.concept)       || 0,
-      shortlisted:      entry.shortlisted ? "true" : "false",
-      notes:            entry.notes || "",
-    });
-    return await getJSON(url);
+    return await getJSON(buildUrl({
+      action: "saveScore", workshop: CONFIG.workshop,
+      group: entry.group, facilitatorEmail: entry.facilitatorEmail || "",
+      functionality: Number(entry.functionality) || 0,
+      visual:        Number(entry.visual)        || 0,
+      problem:       Number(entry.problem)       || 0,
+      concept:       Number(entry.concept)       || 0,
+      shortlisted:   entry.shortlisted ? "true" : "false",
+      liked:         entry.liked   || "",
+      improve:       entry.improve || "",
+    }));
   },
 
   async checkWhitelist(email) {
-    const url = buildUrl({ action: "checkWhitelist", email });
-    const data = await getJSON(url);
+    const data = await getJSON(buildUrl({ action: "checkWhitelist", email }));
     return isWhitelistAllowed(data);
   },
 };
@@ -202,9 +182,9 @@ const sheetsApi = {
 // ─────────────────────────────────────────────────────────────
 function useWorkshopData() {
   const [submissions, setSubmissions] = React.useState({});
-  const [scores, setScores] = React.useState({});
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(null);
+  const [scores,      setScores]      = React.useState({});
+  const [loading,     setLoading]     = React.useState(true);
+  const [error,       setError]       = React.useState(null);
 
   const refetch = React.useCallback(async () => {
     try {
@@ -212,11 +192,8 @@ function useWorkshopData() {
       const data = await sheetsApi.fetchAll();
       setSubmissions(data.submissions || {});
       setScores(data.scores || {});
-    } catch (e) {
-      setError(String(e.message || e));
-    } finally {
-      setLoading(false);
-    }
+    } catch (e) { setError(String(e.message || e)); }
+    finally { setLoading(false); }
   }, []);
 
   React.useEffect(() => { refetch(); }, [refetch]);
@@ -224,25 +201,16 @@ function useWorkshopData() {
   const submitEntry = React.useCallback(async (entry) => {
     setSubmissions((prev) => ({ ...prev, [entry.group]: { ...entry, timestamp: Date.now() } }));
     await sheetsApi.submit(entry);
-    sheetsApi.fetchAll().then((d) => {
-      setSubmissions(d.submissions || {});
-      setScores(d.scores || {});
-    }).catch(() => {});
+    sheetsApi.fetchAll().then((d) => { setSubmissions(d.submissions||{}); setScores(d.scores||{}); }).catch(() => {});
   }, []);
 
   const saveScore = React.useCallback(async (entry) => {
     setScores((prev) => ({ ...prev, [entry.group]: { ...entry, updatedAt: Date.now() } }));
     await sheetsApi.saveScore(entry);
-    sheetsApi.fetchAll().then((d) => {
-      setSubmissions(d.submissions || {});
-      setScores(d.scores || {});
-    }).catch(() => {});
+    sheetsApi.fetchAll().then((d) => { setSubmissions(d.submissions||{}); setScores(d.scores||{}); }).catch(() => {});
   }, []);
 
   return { submissions, scores, loading, error, refetch, submitEntry, saveScore };
 }
 
-Object.assign(window, {
-  CONFIG, YEAR, GROUPS, CRITERIA,
-  sheetsApi, useWorkshopData, isPlaceholder,
-});
+Object.assign(window, { CONFIG, YEAR, GROUPS, CRITERIA, FACILITATOR_GROUPS, sheetsApi, useWorkshopData, isPlaceholder });
