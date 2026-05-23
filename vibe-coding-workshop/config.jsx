@@ -31,7 +31,7 @@ const CRITERIA = [
 // Example: "aisyaharis88@gmail.com": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 // ─────────────────────────────────────────────────────────────
 const FACILITATOR_GROUPS = {
-  "aisyaharis88@gmail.com":  [],   // ← fill in group numbers tomorrow
+  "aisyaharis88@gmail.com":  [3,7],   // ← fill in group numbers tomorrow
   "n.saw192@gmail.com":      [],
   "sunnieloh@gmail.com":     [],
   "thivassini@gmail.com":    [],
