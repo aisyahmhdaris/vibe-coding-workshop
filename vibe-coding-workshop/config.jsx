@@ -31,13 +31,13 @@ const CRITERIA = [
 // Example: "aisyaharis88@gmail.com": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 // ─────────────────────────────────────────────────────────────
 const FACILITATOR_GROUPS = {
-  "aisyaharis88@gmail.com":  [3,7],   // ← fill in group numbers tomorrow
+  "aisyaharis88@gmail.com":  [6,7,8,9,10,31,32,33,34,35,44,11,12,19,20,21,25,26,27,43,46,38,37],   // ← fill in group numbers tomorrow
   "n.saw192@gmail.com":      [],
-  "sunnieloh@gmail.com":     [],
-  "thivassini@gmail.com":    [],
+  "sunnieloh@gmail.com":     [16,17,18,19,20,36,37,38,39,40,43,45,1,2,3,13,14,15,22,23,24,41,42],
+  "thivassini@gmail.com":    [11,12,13,14,15,26,27,28,29,30,42,4,5,6,31,32,33,34,35,39,40,44,45],
   "jonnychu89@gmail.com":    [],
   "pivot.tpp@gmail.com":     [],
-  "alysha.baig18@gmail.com":     [],
+  "alysha.baig18@gmail.com": [1,2,3,4,5,21,22,23,24,25,41,46,7,8,9,16,17,18,28,29,30,36,10],
 };
 
 // ─────────────────────────────────────────────────────────────
