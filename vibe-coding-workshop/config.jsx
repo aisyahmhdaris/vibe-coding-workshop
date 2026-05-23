@@ -37,6 +37,7 @@ const FACILITATOR_GROUPS = {
   "thivassini@gmail.com":    [],
   "jonnychu89@gmail.com":    [],
   "pivot.tpp@gmail.com":     [],
+  "alysha.baig18@gmail.com":     [],
 };
 
 // ─────────────────────────────────────────────────────────────
